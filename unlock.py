@@ -114,7 +114,7 @@ if str(input('Some devices automatically reboot into system after 5 attempts. '
 checksum = luhn_checksum(imei)
 input('Press any key to reboot your device...\n')
 os.system('adb reboot bootloader')
-input('Press any key when your device is ready... (This may take time, depending on your cpu/serial port)\n')
+input('Press any key when your device is ready... (This may take time, depending on your CPU/USB bus)\n')
 
 codeOEM = tryUnlockBootloader(checksum, auto_reboot)
 
