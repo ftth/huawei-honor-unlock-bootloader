@@ -90,8 +90,8 @@ if not path.exists(progress_file):
         progress.write(f)
 progress.read(progress_file)
 
-print('\n\n           Unlock Bootloader script - By SkyEmie_\'')
-print('           modified by mschabhuettl.')
+print('\n\n           Unlock Bootloader script - By SkyEmie_\'.')
+print('           Modified by mschabhuettl.')
 print('           Special thanks to taskula for providing the "auto store progress" and "reboot every 4 attempts" code!')
 print('\n\n  (Please enable USB DEBBUG and OEM UNLOCK if the device isn\'t appear...)')
 print('  /!\ All data will be erased /!\\\n')
