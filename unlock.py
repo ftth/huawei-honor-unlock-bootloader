@@ -3,6 +3,8 @@
 
 """
 SkyEmie_' 💜 https://github.com/SkyEmie
+taskula 💜 https://github.com/taskula
+mschabhuettl 💜 https://github.com/mschabhuettl
 """
 
 import time
@@ -29,17 +31,12 @@ def tryUnlockBootloader(checksum, auto_reboot):
     # Load possible previous progress
     progress.read(progress_file)
 
-    save = 0
-
     n = 0
     while(unlock == False):
         n += 1
 
-        os.system("title Bruteforce is running.. " +
-                  str(algoOEMcode)+" "+str(save))
         sdrout = str(os.system('fastboot oem unlock '+str(algoOEMcode)))
         sdrout = sdrout.split(' ')
-        save += 1
 
         for i in sdrout:
             if i == 'success':
@@ -48,15 +45,12 @@ def tryUnlockBootloader(checksum, auto_reboot):
                 bak.close()
                 return(algoOEMcode)
             if i == 'reboot':
-                print('\n\nSorry, your bootloader has additional protection that other models don\'t have\nI can\'t do anything.. :c\n\n')
-                input('Press any key to exit..\n')
+                print(
+                    '\n\nSorry, your bootloader has additional protection that other models don\'t have.\n\n'
+                    'Some devices automatically reboot into system after 5 attempts.\n'
+                    'Restart the program and try turn on "Reboot back into fastboot after 4 attempts".')
+                input('Press any key to exit...\n')
                 exit()
-
-        if save == 200:
-            save = 0
-            bak = open("unlock_code.txt", "w")
-            bak.write("If you need to pick up where you left off,\nchange the algoOEMcode variable with #base comment to the following value :\n"+str(algoOEMcode))
-            bak.close()
 
         algoOEMcode = algoIncrementChecksum(algoOEMcode, checksum)
 
@@ -97,7 +91,9 @@ if not path.exists(progress_file):
 progress.read(progress_file)
 
 print('\n\n           Unlock Bootloader script - By SkyEmie_\'')
-print('\n\n  (Please enable USB DEBBUG and OEM UNLOCK if the device isn\'t appear..)')
+print('           modified by mschabhuettl.')
+print('           Special thanks to taskula for providing the "auto store progress" and "reboot every 4 attempts" code!')
+print('\n\n  (Please enable USB DEBBUG and OEM UNLOCK if the device isn\'t appear...)')
 print('  /!\ All data will be erased /!\\\n')
 input(' Press any key to detect device..\n')
 
@@ -116,16 +112,16 @@ if str(input('Some devices automatically reboot into system after 5 attempts. '
     auto_reboot = True
 
 checksum = luhn_checksum(imei)
-input('Press any key to reboot your device..\n')
+input('Press any key to reboot your device...\n')
 os.system('adb reboot bootloader')
-input('Press any key when your device is ready.. (This may take time, depending on your cpu/serial port)\n')
+input('Press any key when your device is ready... (This may take time, depending on your cpu/serial port)\n')
 
 codeOEM = tryUnlockBootloader(checksum, auto_reboot)
 
 os.system('fastboot getvar unlocked')
 os.system('fastboot reboot')
 
-print('\n\nDevice unlock ! OEM CODE : '+codeOEM)
+print('\n\nDevice unlock! OEM CODE: '+codeOEM)
 print('(Keep it safe)\n')
-input('Press any key to exit..\n')
+input('Press any key to exit...\n')
 exit()
