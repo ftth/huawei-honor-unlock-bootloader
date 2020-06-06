@@ -6,24 +6,37 @@ SkyEmie_' 💜 https://github.com/SkyEmie
 """
 
 import time
-#from flashbootlib import test
+# from flashbootlib import test
 import os
 import math
+import configparser
+
+from os import path
 
 
 ##########################################################################################################################
 
 def tryUnlockBootloader(checksum):
 
-    unlock      = False
-    algoOEMcode = 1000000000000000 #base
-    save        = 0
+    unlock = False
+    algoOEMcode = int(progress.get(str(imei), 'last_attempt',
+                                   fallback=1000000000000000))  # base
+
+    if not str(imei) in progress:
+        progress[str(imei)] = {}
+    progress[str(imei)]['last_attempt'] = str(algoOEMcode)
+
+    # Load possible previous progress
+    progress.read(progress_file)
+
+    save = 0
 
     while(unlock == False):
-        os.system("title Bruteforce is running.. "+str(algoOEMcode)+" "+str(save))
+        os.system("title Bruteforce is running.. " +
+                  str(algoOEMcode)+" "+str(save))
         sdrout = str(os.system('fastboot oem unlock '+str(algoOEMcode)))
         sdrout = sdrout.split(' ')
-        save  +=1
+        save += 1
 
         for i in sdrout:
             if i == 'success':
@@ -44,10 +57,15 @@ def tryUnlockBootloader(checksum):
 
         algoOEMcode = algoIncrementChecksum(algoOEMcode, checksum)
 
+        progress.set(str(imei), 'last_attempt', str(algoOEMcode))
+        with open(progress_file, 'w') as f:
+            progress.write(f)
+
 
 def algoIncrementChecksum(genOEMcode, checksum):
-    genOEMcode+=int(checksum+math.sqrt(imei)*1024)
+    genOEMcode += int(checksum+math.sqrt(imei)*1024)
     return(genOEMcode)
+
 
 def luhn_checksum(imei):
     def digits_of(n):
@@ -63,6 +81,14 @@ def luhn_checksum(imei):
 
 ##########################################################################################################################
 
+
+progress_file = 'progress.ini'
+progress = configparser.ConfigParser()
+if not path.exists(progress_file):
+    with open(progress_file, 'w') as f:
+        progress.write(f)
+progress.read(progress_file)
+
 print('\n\n           Unlock Bootloader script - By SkyEmie_\'')
 print('\n\n  (Please enable USB DEBBUG and OEM UNLOCK if the device isn\'t appear..)')
 print('  /!\ All data will be erased /!\\\n')
@@ -70,7 +96,11 @@ input(' Press any key to detect device..\n')
 
 os.system('adb devices')
 
-imei     = int(input('Type IMEI digit :'))
+if progress.sections():
+    print('The following IMEIs were already saved')
+    print(*progress.sections(), sep=', ')
+
+imei = int(input('Type IMEI digit :'))
 checksum = luhn_checksum(imei)
 input('Press any key to reboot your device..\n')
 os.system('adb reboot bootloader')
