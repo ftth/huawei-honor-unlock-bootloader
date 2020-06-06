@@ -41,7 +41,7 @@ def tryUnlockBootloader(checksum, auto_reboot):
         for i in sdrout:
             if i == 'success':
                 bak = open("unlock_code.txt", "w")
-                bak.write("Your saved bootloader code : "+str(algoOEMcode))
+                bak.write("Your saved bootloader code: "+str(algoOEMcode))
                 bak.close()
                 return(algoOEMcode)
             if i == 'reboot':
