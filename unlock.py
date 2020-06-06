@@ -95,7 +95,7 @@ print('           Modified by mschabhuettl.')
 print('           Special thanks to taskula for providing the "auto store progress" and "reboot every 4 attempts" code!')
 print('\n\n  (Please enable USB DEBBUG and OEM UNLOCK if the device isn\'t appear...)')
 print('  /!\ All data will be erased /!\\\n')
-input(' Press any key to detect device..\n')
+input(' Press any key to detect device...\n')
 
 os.system('adb devices')
 
@@ -103,7 +103,7 @@ if progress.sections():
     print('The following IMEIs were already saved')
     print(*progress.sections(), sep=', ')
 
-imei = int(input('Type IMEI digit :'))
+imei = int(input('Type IMEI digit:'))
 
 auto_reboot = False
 if str(input('Some devices automatically reboot into system after 5 attempts. '
