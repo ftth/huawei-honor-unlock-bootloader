@@ -103,7 +103,7 @@ if progress.sections():
     print('The following IMEIs were already saved')
     print(*progress.sections(), sep=', ')
 
-imei = int(input('Type IMEI digit:'))
+imei = int(input('Type IMEI digit: '))
 
 auto_reboot = False
 if str(input('Some devices automatically reboot into system after 5 attempts. '
