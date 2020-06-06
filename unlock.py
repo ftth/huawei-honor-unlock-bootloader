@@ -16,7 +16,7 @@ from os import path
 
 ##########################################################################################################################
 
-def tryUnlockBootloader(checksum):
+def tryUnlockBootloader(checksum, auto_reboot):
 
     unlock = False
     algoOEMcode = int(progress.get(str(imei), 'last_attempt',
@@ -31,7 +31,10 @@ def tryUnlockBootloader(checksum):
 
     save = 0
 
+    n = 0
     while(unlock == False):
+        n += 1
+
         os.system("title Bruteforce is running.. " +
                   str(algoOEMcode)+" "+str(save))
         sdrout = str(os.system('fastboot oem unlock '+str(algoOEMcode)))
@@ -60,6 +63,10 @@ def tryUnlockBootloader(checksum):
         progress.set(str(imei), 'last_attempt', str(algoOEMcode))
         with open(progress_file, 'w') as f:
             progress.write(f)
+
+        if auto_reboot and n % 4 == 0:
+            n = 0
+            os.system('fastboot reboot bootloader')
 
 
 def algoIncrementChecksum(genOEMcode, checksum):
@@ -101,12 +108,19 @@ if progress.sections():
     print(*progress.sections(), sep=', ')
 
 imei = int(input('Type IMEI digit :'))
+
+auto_reboot = False
+if str(input('Some devices automatically reboot into system after 5 attempts. '
+             'Would you like to reboot back into fastboot after 4 attempts? (y/N): ')
+       .lower().strip()[:1]) == 'y':
+    auto_reboot = True
+
 checksum = luhn_checksum(imei)
 input('Press any key to reboot your device..\n')
 os.system('adb reboot bootloader')
 input('Press any key when your device is ready.. (This may take time, depending on your cpu/serial port)\n')
 
-codeOEM = tryUnlockBootloader(checksum)
+codeOEM = tryUnlockBootloader(checksum, auto_reboot)
 
 os.system('fastboot getvar unlocked')
 os.system('fastboot reboot')
